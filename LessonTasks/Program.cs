@@ -6,11 +6,40 @@ using System.Threading.Tasks;
 
 namespace LessonTasks
 {
-    internal class Program
+    internal static class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("БВ321 привет! Урок 2");
+            Console.WriteLine("Enter task number:");
+            int taskNumber = int.Parse(Console.ReadLine());
+            switch (taskNumber)
+            {
+                case 1: SolveTask1(); break;
+                case 2: SolveTask2(); break;
+                case 3: SolveTask3(); break;
+                case 4: SolveTask4(); break;
+                default: Console.WriteLine("Unknown task"); break;
+            }
+        }
+
+        private static void SolveTask1()
+        {
+            
+        }
+
+        private static void SolveTask2()
+        {
+            
+        }
+
+        private static void SolveTask3()
+        {
+            
+        }
+
+        private static void SolveTask4()
+        {
+            
         }
     }
 }
