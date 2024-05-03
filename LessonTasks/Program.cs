@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LessonTasks
 {
-    internal static class Program
+    // Обратите внимание на структуру программы (без Top-level выражений и разбивкой на задачи, которая удобнее всем для отладки)
+    // В дальнейшем пожалуйста практикуйтесь в работе с гитом и github - присылайте ссылку на коммит с домашним заданием в вашем репозитории (пишите если возникнут трудности)
+    // прим. ко всем заданиям: любые строки в шарпе принято оставлять на английском. Локализацию нужно обсудить, если она вызвала интерес. В коде только английский.
+    internal class Program
     {
         static void Main(string[] args)
         {
@@ -15,62 +17,100 @@ namespace LessonTasks
             switch (taskNumber)
             {
                 case 1: SolveTask1(); break;
-                case 2: SolveTask2(args); break;
+                case 2: SolveTask2(); break;
                 case 3: SolveTask3(); break;
                 case 4: SolveTask4(); break;
+                case 5: SolveTask5(); break;
+                case 6: SolveTask6(); break;
+                case 7: SolveTask7(); break;
                 default: Console.WriteLine("Unknown task"); break;
             }
+
+            Console.WriteLine("Press any button to exit...");
+            Console.ReadKey();
         }
+
+        private static DateTime ValueExample;
+        private int _property1;
 
         private static void SolveTask1()
         {
-            var arr = new int[5];
-            int evenCount = 0;
-            int oddCount = 0;
-            var hashSet = new HashSet<int>();
-            for (int i = 0; i < arr.Length; i++)
-            {
-                int item = arr[i];
-                if (item % 2 == 0)
-                {
-                    evenCount++;
-                }
-                else
-                {
-                    oddCount++;
-                }
-
-                hashSet.Add(item);
-            }
-
-            Console.WriteLine(String.Format("{0} {1}", evenCount, oddCount));
-            Console.WriteLine($"{evenCount} {oddCount} {hashSet.Count}");
-            Console.ReadKey();
+            Console.WriteLine(CalculateProductInRange(1, 6));
         }
 
-        private static void SolveTask2(string[] args)
+        internal bool CalculateProductInRange(int from, int to)
         {
-            int result = 0;
-
-            string input = Console.ReadLine();
-            string[] numbers = input.Split(',');
-            int upperBoundary = ParseSingleNumberArgument(args);
-            for (int i = 0; i < numbers.Length; i++)
+            int property1 = 0;
+            for (int i = from; i <= to; i++)
             {
-                int num = int.Parse(numbers[i]);
-                if (num < upperBoundary)
-                {
-                    result++;
-                }
+                _property1 = 9;
             }
 
-            Console.WriteLine($"Thank you for your attention: {result}");
-            Console.ReadKey();
+            return product;
+        }
+
+        public int Property1 { get => _property1; internal set => _property1 = value; }
+
+        private static void SolveTask2()
+        {
+            int valueToCheck = int.Parse(Console.ReadLine());
+            bool foundInFibonhachiSequence = false;
+            Fibonachi(10, item =>
+            {
+                if (item <= valueToCheck)
+                {
+                    if (item == valueToCheck)
+                        foundInFibonhachiSequence = true;
+                    return true;
+                }
+
+                return false;
+            });
+
+            int result = Fibonachi(10);
+        }
+
+        private static int Fibonachi(int n)
+        {
+            return Fibonachi(n, _ => false);
+            //return Fibonachi(n, PrivateClass.Default);
+        }
+
+        private class PrivateClass : IIamVisitor
+        {
+            public static PrivateClass Default { get; }
+
+            public bool Visit(int item)
+            {
+
+            }
+
+            static PrivateClass()
+            {
+                Default = new PrivateClass();
+            }
+        }
+
+
+        private static int Fibonachi(int n, Func<int, bool> visitOrStop)
+        {
+            if (n < 0) throw new ArgumentException("n < 0");
+
+            if (n == 0 || n == 1)
+            {
+                if (visitOrStop(n)) return -1;
+                return n;
+            }
+
+            int sum = Fibonachi(n - 1, visitOrStop) + Fibonachi(n - 2, visitOrStop);
+            if (visitOrStop(sum)) return -1;
+            return sum;
         }
 
         private static void SolveTask3()
         {
-            
+            int[] array = new[] { 3, 2, 1 };
+            Array.Sort(array);
         }
 
         private static void SolveTask4()
@@ -78,12 +118,25 @@ namespace LessonTasks
 
         }
 
-        private static int ParseSingleNumberArgument(string[] args)
+        private class City
         {
-            if (args.Length != 1)
-                throw new ApplicationException("args.Length != 1");
 
-            return int.Parse(args[0]);
+        }
+
+        private static void SolveTask5()
+        {
+
+        }
+
+        private static void SolveTask6()
+        {
+
+        }
+
+        private static void SolveTask7()
+        {
+
         }
     }
 }
+
