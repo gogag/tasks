@@ -35,21 +35,35 @@ namespace LessonTasks
 
         private static void SolveTask1()
         {
-            Console.WriteLine(CalculateProductInRange(1, 6));
-        }
-
-        internal bool CalculateProductInRange(int from, int to)
-        {
-            int property1 = 0;
-            for (int i = from; i <= to; i++)
+            string str = Console.ReadLine();
+            try
             {
-                _property1 = 9;
+                int val = Parse(str);
+                Console.WriteLine(val);
             }
+            catch (Exception ex)
+            {
+                if (ex.Message == "Invalid number")
+                    throw new ApplicationException("I thought so", ex);
 
-            return product;
+                throw;
+            }
         }
 
-        public int Property1 { get => _property1; internal set => _property1 = value; }
+        private static int Parse(string str)
+        {
+            if (str == null)
+                throw new ArgumentNullException(nameof(str));
+            
+            int num;
+            if (!int.TryParse(str, out num))
+                throw new ArgumentException("Invalid number");
+
+            if (num > 10)
+                throw new ArgumentOutOfRangeException(nameof(str));
+
+            return num;
+        }
 
         private static void SolveTask2()
         {
@@ -76,22 +90,6 @@ namespace LessonTasks
             //return Fibonachi(n, PrivateClass.Default);
         }
 
-        private class PrivateClass : IIamVisitor
-        {
-            public static PrivateClass Default { get; }
-
-            public bool Visit(int item)
-            {
-
-            }
-
-            static PrivateClass()
-            {
-                Default = new PrivateClass();
-            }
-        }
-
-
         private static int Fibonachi(int n, Func<int, bool> visitOrStop)
         {
             if (n < 0) throw new ArgumentException("n < 0");
@@ -115,12 +113,53 @@ namespace LessonTasks
 
         private static void SolveTask4()
         {
-
+            var antiWebsite = new AntiWebsite((key, val) => Console.WriteLine($"{key}: {val}"))
+            {
+                Name = "asdf",
+                Description = "no matter what is this, they think it is enough to just put to DB and limit its length with nvarchar(<something>)",
+                Url = "trash to save, validated somewhere else",
+                IpAddress = "another trash validated somewhere",
+            };
+            Console.WriteLine(antiWebsite); // чтобы продемонстрировать переопределение ToString
+            System.Reflection.PropertyInfo[] propertyInfos = typeof(AntiWebsite).GetProperties();
         }
 
-        private class City
+        // 🤦 в угоду ORM-кам
+        private class AntiWebsite
         {
+            private readonly Action<string, string> _outputStrategy;
+            private string _description;
 
+            public AntiWebsite(Action<string, string> outputStrategy)
+            {
+                _outputStrategy = outputStrategy;
+            }
+
+            public string Name { get; set; }
+            public string Description
+            {
+                get => _description;
+                internal set
+                {
+                    _description = value;
+                }
+            }
+            public string Url { get; set; }
+            public string IpAddress { get; set; }
+
+            // шарп не для рисования графических интерфейсов. ToString вообще только для отладки где-то когда-то рекомендовали. Отладчик и так вам позволяет смотреть на текущие значения удобно
+            public override string ToString()
+            {
+                _outputStrategy(nameof(Url), Url);
+                _outputStrategy(nameof(Url), Url);
+                _outputStrategy(nameof(Url), Url);
+                _outputStrategy(nameof(Url), Url);
+                return $@"
+Super website: {Name}.
+It takes the most expensive domain, see: {Url}.
+And you know, before you read the description, here is its IP: {IpAddress}.
+Now please, don't hesitate to read the whole description: {Description}";
+            }
         }
 
         private static void SolveTask5()
@@ -136,6 +175,40 @@ namespace LessonTasks
         private static void SolveTask7()
         {
 
+        }
+
+        private abstract class BaseClass
+        {
+            protected abstract int Calculate();
+
+            public string Render()
+            {
+                int val = Calculate();
+                return $"{val} is ok";
+            }
+        }
+
+        private interface IBaseClass
+        {
+        }
+
+        private interface IBaseClass1
+        {
+        }
+
+        private class Inheritor : BaseClass, IBaseClass, IBaseClass1
+        {
+            private int _value;
+
+            public Inheritor(int value)
+            {
+                _value = value;
+            }
+
+            protected override int Calculate()
+            {
+                return _value * _value;
+            }
         }
     }
 }
