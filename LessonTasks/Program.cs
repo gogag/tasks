@@ -1,7 +1,9 @@
 ﻿using LessonTasks.NumberGenerators;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace LessonTasks
@@ -37,75 +39,219 @@ namespace LessonTasks
         /// <exception cref="ApplicationException"></exception>
         private static void SolveTask1()
         {
-            //INumberGenerator generatorAsInterface = null;
-            //NumberGeneratorExtensions.Generate(generatorAsInterface, generatedNumbers);
-            //generatorAsInterface.Generate(generatedNumbers);
-            NumberGenerator numberGenerator;
+            int somethingInt = 1;
+            var smth = (Something)somethingInt;
+            Something smth1 = somethingInt;
+            var smth2 = Something.From(somethingInt);
 
-            // пример каррирования
-            //Func<int, int, SequentialNumberGenerator> func = SequentialNumberGenerator.Create;
-            //int arg1 = 1;
-            //Func<int, SequentialNumberGenerator> carriedFunc = Carry(func, arg1);
-            //func(1, 2);
+            var smthc = new SomethingClass();
+            DoSomething(smthc);
 
-            // пример Fluent API
-            new[] { 1, 2, 3 }.Where(item => item < 2).Where(item => item > 0).ToList();
+            var smthSet = new HashSet<Something>(EqualityComparer<Something>.Default);
+            smthSet.Add(new Something { Value = 1 }); // returns true
+            smthSet.Add(new Something { Value = 1 }); // returns false
 
-            Console.WriteLine("Select generator: 1 - even, 2 - odd, 3 - simple, 4 - fibanachi");
-            switch (int.Parse(Console.ReadLine()))
-            {
-                case 1:
-                    numberGenerator = new SequentialNumberGenerator.EvenZeroBased();
-                    break;
-                case 2:
-                    // наш Fluent API + вырожденная реализация паттерна Builder
-                    numberGenerator = SequentialNumberGenerator.From(1).IncrementBy(2).Build();
-                    break;
-                case 3:
-                    numberGenerator = new SequentialNumberGenerator(0, 1);
-                    break;
-                default:
-                    throw new ApplicationException($"Unknown generator {selectedGeneratorStr}");
-            }
-            var generatedNumbers = new int[10];
-            numberGenerator.Generate(generatedNumbers);
-            Console.WriteLine(generatedNumbers);
+            var virginSet = new HashSet<object>();
+            virginSet.Add(new object()); // returns true
+            virginSet.Add(new object()); // returns true
+
+            IQueryable<AnemicWebsite> websitesQueriable = null;
+            IEnumerable<AnemicWebsite> websitesEnumberable = null;
+
+            Expression<Func<AnemicWebsite, bool>> expression = w => w.SiteName == "academytop.com";
+            new SomethingExpressionVisitor().Visit(expression);
+            websitesQueriable.Where(expression).ToList();
+            websitesEnumberable.Where(w => w.SiteName == "academytop.com");
+
+            int id = default;
+            string siteName = default;
+            string path = default;
+            string description = default;
+            string ipAddress = default;
+            object obj = new AnemicWebsite(id, description, path, siteName, ipAddress);
+            //public AnemicWebsite(int id, string siteName, string path, string description, string ipAddress)
+            Console.WriteLine(obj);
+
+            int val = 100;
+            UglyMethod(ref val);
+            Console.WriteLine(val); // 10
+
+            UglyMethod(ref obj);
+            Console.WriteLine(obj); // ha ha
         }
 
-        //private static Func<int, SequentialNumberGenerator> Carry(Func<int, int, SequentialNumberGenerator> func, int arg1)
-        //{
-        //    return arg2 => func(arg1, arg2);
-        //}
-
-        public class Poco
+        private static void UglyMethod(ref int arg) // int*
         {
-            public int Prop1 { get; set; }
-            public int Prop2 { get; set; }
+            arg = 10;
         }
 
-        // а-та-та
-        //private static int GenerateNext(GeneratorType generatorType, int prevValue, int )
-        //{
-        //    switch (generatorType)
-        //    {
-        //        case GeneratorType.Even:
-        //            return 0;
-        //        case GeneratorType.Odd:
-        //            break;
-        //        case GeneratorType.Simple:
-        //            break;
-        //        case GeneratorType.Fibanachi:
-        //            break;
-        //    }
-        //}
+        private static void UglyMethod(ref object arg) // object**
+        {
+            arg.ToString();
+            arg = "ha ha";
+        }
 
-        //private enum GeneratorType
-        //{
-        //    Even,
-        //    Odd,
-        //    Simple,
-        //    Fibanachi
-        //}
+        private class SomethingExpressionVisitor : ExpressionVisitor
+        {
+            public override Expression Visit(Expression node)
+            {
+                if (node is LabelExpression)
+                {
+
+                }
+                else if (node is BinaryExpression binary)
+                {
+                    binary.Left;binary.Right
+                }
+                return base.Visit(node);
+            }
+        }
+
+        private static void DoSomething(SomethingClass smthc)
+        {
+            if (smthc is null)
+                throw new ArgumentNullException(nameof(smthc));
+
+            ////if (smthc == null)
+            //if (ReferenceEquals(smthc, null))
+            //if (smthc is null)
+            //        throw new ArgumentNullException("ReferenceEquals(smthc, null)");
+
+            //smthc.Equals // throws NullReferenceException
+        }
+
+        private struct Something
+        {
+            public int AnemicWebsiteId { get; set; }
+            public int Value { get; set; }
+            public int ValueSeparated { get; set; }
+
+            public static Something From(int value, int valueSeparated)
+            {
+
+            }
+
+            public static explicit operator Something(int value)
+            {
+                return new Something { Value = value };
+            }
+
+            public override bool Equals(object obj)
+            {
+                var other = (Something)obj;
+                if (Value != other.Value)
+                    return false;
+                //fadf
+                return base.Equals(obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+        }
+
+        private class SomethingClass : IEquatable<SomethingClass>
+        {
+            public bool Equals(SomethingClass obj)
+            {
+                return false;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return base.Equals(obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+
+            public static bool operator ==(SomethingClass dfd)
+            {
+                return false;
+            }
+
+            public static bool operator !=(SomethingClass dfd)
+            {
+                return true;
+            }
+        }
+
+        private class SomethingCollectionProxy : IReadOnlyList<Something>
+        {
+            private readonly IReadOnlyList<Something> _somethings;
+
+            public SomethingCollectionProxy(IReadOnlyList<Something> somethings)
+            {
+                if (somethings is null)
+                    throw new ArgumentNullException(nameof(somethings));
+
+                _somethings = somethings;
+            }
+
+            public Something this[int index]
+            {
+                get
+                {
+
+
+                    //throw new IndexOutOfRangeException();
+                    return _somethings[index];
+                }
+            }
+
+            public Something this[string index]
+            {
+                get
+                {
+
+
+                    //throw new IndexOutOfRangeException();
+                    return _somethings[index];
+                }
+            }
+
+            public int Count => _somethings.Count;
+
+            public IEnumerator<Something> GetEnumerator()
+            {
+                return _somethings.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return (IEnumerator<Something>)this.GetEnumerator();
+            }
+        }
+
+        // anemic model example. Из урока 3.
+        private class AnemicWebsite
+        {
+            public int Id { get; set; }
+            [Column("SITE_NAME")]
+            public string SiteName { get; private set; }
+            public string Path { get; private set; }
+            public string Description { get; private set; }
+            public string IpAddress { get; }
+            public string IPAddress { get; private set; }
+            public virtual IEnumerable<Something> Somethings { get; private set; }
+
+            public AnemicWebsite(int id, string siteName, string path, string description, string ipAddress)
+            {
+                Id = id;
+                SiteName = siteName;
+                Path = path;
+                Description = description;
+                IpAddress = ipAddress;
+            }
+
+            public override string ToString()
+            {
+                return $"SiteName: {SiteName}";
+            }
+        }
     }
 }
 
