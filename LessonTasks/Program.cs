@@ -24,7 +24,17 @@ namespace LessonTasks
 
         private static void SolveTask1()
         {
-            
+            int? val = null;
+            int? value = val + 1;
+            Nullable<int>
+            int valNotNull = value ?? throw new ApplicationException();
+            if (!value.HasValue)
+            {
+                value.Value
+                throw new Exception()
+            }
+            Console.WriteLine(value);
+            Console.ReadKey();
         }
 
         private static void SolveTask2()
