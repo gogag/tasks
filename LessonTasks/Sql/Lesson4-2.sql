@@ -78,30 +78,30 @@ go -- смотрим на записи, где с одной стороны ес
 SELECT *
 FROM (
   SELECT tb.Id, tb.GroupName, tb.TeacherId FROM TableBad tb
-  UNION ALL
+  UNION ALL
   SELECT Null, Null, null -- добавляем для подстановки, если нет групп. null-ов столько, сколько полей
 ) tb
 CROSS JOIN ( -- то же, что запятая
-  SELECT t.Id, t.Name, t.Rating FROM Teachers t
-  UNION ALL
+  SELECT t.Id, t.Name, t.Rating FROM Teachers t
+  UNION ALL
   SELECT Null, Null, null -- добавляем для подстановки, если нету учителя, null-ов столько, сколько полей
 ) t
 WHERE (
   tb.TeacherId = t.Id -- это зона INNER
-  OR ( -- это зона LEFT OUTER
+  OR ( -- это зона LEFT OUTER
 	/* -- это невыполнимое условие, так как есть foreign key
-    tb.TeacherId Is Not Null 
+    tb.TeacherId Is Not Null 
     AND t.Id IS NULL
-    AND NOT EXISTS(SELECT 1 FROM Teachers t WHERE t.Id = tb.TeacherId)
+    AND NOT EXISTS(SELECT 1 FROM Teachers t WHERE t.Id = tb.TeacherId)
     OR */
 	tb.Id is not null
 	AND tb.TeacherId is null AND t.Id IS NULL -- это проверка на комбинацию с добавленной записью с null-ами, при условии что слева запись есть (tb.Id is not null)
-  )
-  OR ( -- это зона RIGHT OUTER
-    t.Id Is Not Null
-    AND tb.Id IS NULL
-    AND NOT EXISTS(SELECT 1 FROM TableBad tb WHERE tb.TeacherId = t.Id) -- это проверка выполняется, если для комбинации с null-ами, не существует других не-null комбинаций (из зоны INNER-ов)
-  )
+  )
+  OR ( -- это зона RIGHT OUTER
+    t.Id Is Not Null
+    AND tb.Id IS NULL
+    AND NOT EXISTS(SELECT 1 FROM TableBad tb WHERE tb.TeacherId = t.Id) -- это проверка выполняется, если для комбинации с null-ами, не существует других не-null комбинаций (из зоны INNER-ов)
+  )
 )
 go -- тут мы видим во что "примерно" разворачивается сахар от FULL [OUTER] JOIN
 

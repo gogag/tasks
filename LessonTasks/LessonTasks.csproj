@@ -49,9 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Sql\Lesson4-2.sql.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Sql\Lesson4-2.sql" />
+    <Content Include="Sql\Lesson4-2.sql.png" />
     <Content Include="Sql\Lesson4.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
