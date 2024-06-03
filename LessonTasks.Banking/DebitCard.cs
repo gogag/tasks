@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LessonTasks.Banking
 {
-    public sealed class DebitCard : IEquatable<DebitCard>, IComparable<DebitCard>
+    public sealed class DebitCard
     {
         public decimal Balance { get; }
         public string CardNumber { get; }
@@ -57,24 +57,57 @@ namespace LessonTasks.Banking
             return new DebitCard(original.CardNumber, original.Balance - transfer.Amount);
         }
 
-        public static bool operator >(DebitCard a, DebitCard b)
+        public sealed class CvcComparer : IEqualityComparer<DebitCard>,
+            IComparer<DebitCard>
         {
-            return a.Balance > b.Balance;
+            public static CvcComparer Instance { get; } = new CvcComparer();
+
+            private CvcComparer() { }
+
+            public int Compare(DebitCard x, DebitCard y)
+            {
+                asdf;
+                throw new NotImplementedException();
+            }
+
+            public bool Equals(DebitCard x, DebitCard y)
+            {
+                asdf;
+                throw new NotImplementedException();
+            }
+
+            public int GetHashCode(DebitCard obj)
+            {
+                asdf;
+                throw new NotImplementedException();
+            }
         }
 
-        public static bool operator <(DebitCard a, DebitCard b)
-        {
-            return a.Balance < b.Balance;
-        }
 
-        public static bool operator ==(DebitCard a, DebitCard b)
+        public sealed class BalanceComparer : IEqualityComparer<DebitCard>,
+            IComparer<DebitCard>
         {
-            return a.Cvc == b.Cvc;
-        }
+            public static BalanceComparer Instance { get; } = new BalanceComparer();
 
-        public static bool operator !=(DebitCard a, DebitCard b)
-        {
-            return a.Cvc != b.Cvc;
+            private BalanceComparer() { }
+
+            public int Compare(DebitCard x, DebitCard y)
+            {
+                asdf;
+                throw new NotImplementedException();
+            }
+
+            public bool Equals(DebitCard x, DebitCard y)
+            {
+                asdf;
+                throw new NotImplementedException();
+            }
+
+            public int GetHashCode(DebitCard obj)
+            {
+                asdf;
+                throw new NotImplementedException();
+            }
         }
     }
 }

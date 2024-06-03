@@ -133,21 +133,27 @@ namespace LessonTasks
             DebitCard cardWithSecret1 = InputSecret(debitCardPrototype);
             DebitCard cardWithSecret2 = InputSecret(debitCardPrototype);
 
-            if (cardWithSecret1 > cardWithSecret2)
+            int comparison = DebitCard.BalanceComparer.Instance.Compare(
+                cardWithSecret1, cardWithSecret2);
+            if (comparison > 0)
             {
                 Console.WriteLine("Card 1 is greater than card 2");
             }
-            else if (cardWithSecret1 < cardWithSecret2)
+            else if (comparison < 0)
             {
                 Console.WriteLine("Card 1 is less than card 2");
             }
             else
             {
-                if (cardWithSecret1 != cardWithSecret2)
-                    throw new ApplicationException("cardWithSecret1 != cardWithSecret2");
-
                 Console.WriteLine("Cards are equal");
             }
+
+            var uniqueCvc = new HashSet<DebitCard>(DebitCard.CvcComparer.Instance) { 
+                cardWithSecret1,
+                cardWithSecret2
+            };
+
+            Console.WriteLine($"Unique cvc numbers found: {uniqueCvc.Count}");
         }
 
         private static void SolveTask4()
