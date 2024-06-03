@@ -101,13 +101,7 @@ namespace LessonTasks
 
         private static void SolveTask2()
         {
-            Console.WriteLine("Enter your card number:");
-            string cardNumber = Console.ReadLine();
-
-            Console.WriteLine("Enter current balance (nothing else matters)");
-            decimal balance = InputDecimal();
-
-            var debitCard = new DebitCard(cardNumber, balance);
+            DebitCard debitCard = InputDebitCard();
 
             Console.WriteLine("Choose what you want to do:");
             Console.WriteLine("1. Debit");
@@ -134,12 +128,49 @@ namespace LessonTasks
 
         private static void SolveTask3()
         {
-            
+            DebitCard debitCardPrototype = InputDebitCard();
+
+            DebitCard cardWithSecret1 = InputSecret(debitCardPrototype);
+            DebitCard cardWithSecret2 = InputSecret(debitCardPrototype);
+
+            if (cardWithSecret1 > cardWithSecret2)
+            {
+                Console.WriteLine("Card 1 is greater than card 2");
+            }
+            else if (cardWithSecret1 < cardWithSecret2)
+            {
+                Console.WriteLine("Card 1 is less than card 2");
+            }
+            else
+            {
+                if (cardWithSecret1 != cardWithSecret2)
+                    throw new ApplicationException("cardWithSecret1 != cardWithSecret2");
+
+                Console.WriteLine("Cards are equal");
+            }
         }
 
         private static void SolveTask4()
         {
 
+        }
+
+        private static DebitCard InputDebitCard()
+        {
+            Console.WriteLine("Enter your card number:");
+            string cardNumber = Console.ReadLine();
+
+            Console.WriteLine("Enter current balance (nothing else matters)");
+            decimal balance = InputDecimal();
+
+            var debitCard = new DebitCard(cardNumber, balance);
+            return debitCard;
+        }
+
+        private static DebitCard InputSecret(DebitCard debitCardPrototype)
+        {
+            Console.WriteLine("Enter CVC from back of your card:");
+            return debitCardPrototype.WithSecret(Console.ReadLine());
         }
 
         private static decimal InputDecimal()
