@@ -43,7 +43,7 @@ namespace LessonTasks
             Console.WriteLine("Enter count of numbers to generate:");
             int countToGenerate = int.Parse(Console.ReadLine());
 
-            Console.WriteLine("Choose one of supported number generators: odd, even");
+            Console.WriteLine("Choose one of supported number generators: odd, even, single");
             string generatorName = Console.ReadLine();
 
             NumberGenerator numberGenerator;
@@ -56,14 +56,43 @@ namespace LessonTasks
                 case "even":
                     numberGenerator = new EvenNumberGenerator();
                     break;
+                case "single":
+                    numberGenerator = NumberGenerator.SingleRandomNumber.Instance;
+                    break;
                 default:
                     throw new ApplicationException($"Unknown generator: {generatorName}");
             }
 
-            for (int i = 0; i < countToGenerate; i++)
+            //foreach (int item in numberGenerator)
+            //{
+            //    if (countToGenerate-- > 0)
+            //    {
+            //        Console.WriteLine($"Generated number: {item}");
+            //    }
+            //}
+
+            IEnumerator<int> enumerator = null;
+
+            using (enumerator = numberGenerator.GetEnumerator())
             {
-                int generatedNumber = numberGenerator.Next();
-                Console.WriteLine($"Generated number {i + 1}: {generatedNumber}");
+                bool enumerationFinished;
+                while (enumerationFinished = enumerator.MoveNext())
+                {
+                    int item = enumerator.Current;
+                    if (countToGenerate-- > 0)
+                    {
+                        Console.WriteLine($"Generated number: {item}");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (!enumerationFinished)
+                {
+                    Console.WriteLine("Generator has exhausted his values");
+                }
             }
 
             Console.WriteLine("Press any key to finish...");

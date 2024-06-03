@@ -1,4 +1,6 @@
-﻿namespace LessonTasks.NumberGenerators
+﻿using System.Collections.Generic;
+
+namespace LessonTasks.NumberGenerators
 {
     public sealed class OddNumberGenerator : NumberGenerator
     {
@@ -9,11 +11,19 @@
             _current = 1;
         }
 
-        public override int Next()
+        public override IEnumerator<int> GetEnumerator()
         {
-            int current = _current;
-            _current = current + 2;
-            return current;
+            while (true)
+            {
+                int current = _current;
+                unchecked
+                {
+                    _current = current + 2;
+                    if (_current < current)
+                        yield break;
+                }
+                yield return current;
+            }
         }
     }
 }
