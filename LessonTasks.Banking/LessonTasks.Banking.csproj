@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{16D1CDC6-0CA4-49E0-89C0-20455FE2343A}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>LessonTasks</RootNamespace>
-    <AssemblyName>LessonTasks</AssemblyName>
+    <ProjectGuid>{B97009D9-4F39-4492-953D-DA796DA8D10E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LessonTasks.Banking</RootNamespace>
+    <AssemblyName>LessonTasks.Banking</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -43,21 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="DebitCard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LessonTasks.Banking\LessonTasks.Banking.csproj">
-      <Project>{b97009d9-4f39-4492-953d-da796da8d10e}</Project>
-      <Name>LessonTasks.Banking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LessonTasks.NumberGenerators\LessonTasks.NumberGenerators.csproj">
-      <Project>{149867f8-f841-4690-a904-63db534b864f}</Project>
-      <Name>LessonTasks.NumberGenerators</Name>
-    </ProjectReference>
+    <Compile Include="Transfer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

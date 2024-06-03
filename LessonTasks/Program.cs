@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LessonTasks.NumberGenerators;
+using LessonTasks.Banking;
 
 namespace LessonTasks
 {
@@ -100,7 +101,35 @@ namespace LessonTasks
 
         private static void SolveTask2()
         {
-            
+            Console.WriteLine("Enter your card number:");
+            string cardNumber = Console.ReadLine();
+
+            Console.WriteLine("Enter current balance (nothing else matters)");
+            decimal balance = InputDecimal();
+
+            var debitCard = new DebitCard(cardNumber, balance);
+
+            Console.WriteLine("Choose what you want to do:");
+            Console.WriteLine("1. Debit");
+            Console.WriteLine("2. Withdraw");
+            switch (int.Parse(Console.ReadLine()))
+            {
+                case 1:
+                    Console.WriteLine("How much would you like to debit:");
+                    debitCard += new Transfer(InputDecimal());
+                    break;
+                case 2:
+                    Console.WriteLine("How much would you like to withdraw:");
+                    debitCard -= new Transfer(InputDecimal());
+                    break;
+                default:
+                    Console.WriteLine($"Unknown action");
+                    return;
+            }
+
+            Console.WriteLine("You've left your card in this state:");
+            Console.WriteLine($"Number: {debitCard.CardNumber}");
+            Console.WriteLine($"Balance: {debitCard.Balance}");
         }
 
         private static void SolveTask3()
@@ -110,7 +139,12 @@ namespace LessonTasks
 
         private static void SolveTask4()
         {
-            
+
+        }
+
+        private static decimal InputDecimal()
+        {
+            return decimal.Parse(Console.ReadLine());
         }
     }
 }
