@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LessonTasks.Storages;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -21,6 +22,7 @@ namespace LessonTasks
                 case 2: SolveTask2(); break;
                 case 3: SolveTask3(); break;
                 case 4: SolveTask4(); break;
+                case 5: SolveTask5(); break;
                 default: Console.WriteLine("Unknown task"); break;
             }
         }
@@ -73,21 +75,6 @@ namespace LessonTasks
             Console.WriteLine(duplicateValues.Count); // 2
         }
 
-        internal class TrickyEqualityComparer : IEqualityComparer<int>
-        {
-            public TrickyEqualityComparer() { }
-
-            public bool Equals(int x, int y)
-            {
-                return false;
-            }
-
-            public int GetHashCode(int obj)
-            {
-                return 0;
-            }
-        }
-
         private static void SolveTask4()
         {
             int asdf = GetDefault<int>(); // параметризация шаблона обязательна
@@ -107,6 +94,98 @@ namespace LessonTasks
                 object defaultValue = methodInfo.Invoke(null, null);
                 Console.WriteLine(defaultValue);
             }
+        }
+
+        private static void SolveTask5()
+        {
+            List<(string, int)> fileSizes = GenerateFiles();
+
+            List<Storage> storages = EnterStorages();
+
+            int storageIndex = 0;
+            //foreach (KeyValuePair<string, int> item in fileSizes) // это мы побаловались со словарем, но передумали его использовать не по назначению
+            //foreach ((string, int) item in fileSizes) // не так гибко
+            for (int fileIndex = 0; fileIndex < fileSizes.Count; fileIndex++)
+            {
+                //string fileName = item.Key;
+                //item.Value; // тоже со словарем баловались
+                (string fileName, int fileSize) = fileSizes[fileIndex];
+                Storage currentStorage = storages[storageIndex];
+                while (currentStorage != null)
+                {
+                    if (!currentStorage.Add(fileName, fileSize))
+                    {
+                        storageIndex++;
+                        currentStorage = storageIndex >= storages.Count
+                            ? null
+                            : storages[storageIndex];
+                    }
+                }
+            }
+        }
+
+        private static List<(string FileName, int FileSize)> GenerateFiles()
+        {
+            //Tuple<> - история кортежей, вот то что сверху 👆
+            const int fileSize = 780;
+            //var files = new Dictionary<string, int> // получился анти пример использования словаря
+            //{
+            //    ["asdf"] = fileSize,
+            //    // что если кто-то захочет захардкодить еще значение и ключ, после строки сверху
+            //};
+
+            // рандомные имена, размер файла 780 (будем в Мб), нагенерить на общую сумму 565 000 (чтоб не меньше)
+            фыва;
+            throw new NotImplementedException();
+        }
+
+        private static List<Storage> EnterStorages()
+        {
+            var storages = new List<Storage>();
+
+            Console.WriteLine("Enter one or more storages for estimation:");
+            do { } while (TryEnterStorages(storages));
+
+            Console.WriteLine();
+
+            return storages;
+        }
+
+        private static bool TryEnterStorages(List<Storage> storages)
+        {
+            Storage prototype;
+
+            Console.WriteLine("Choose storage type (or finish):");
+            string storageType = Console.ReadLine();
+            switch (storageType)
+            {
+                case "flash":
+                    prototype = EnterFlashStorage();
+                    break;
+                case "finish":
+                    return false;
+                default:
+                    throw new ApplicationException(storageType);
+            }
+
+            Console.WriteLine("Enter how many storages of this type you have:");
+            int storagesCount = int.Parse(Console.ReadLine());
+
+            storages.Add(prototype);
+            for (int i = 0; i < storagesCount - 1; i++)
+            {
+                storages.Add((Storage)prototype.Clone());
+            }
+
+            return true;
+        }
+
+        private static Storage EnterFlashStorage()
+        {
+            Console.WriteLine("Choose speed: usb2.0, usb3.0");
+
+            asdf;
+            return new FlashStorage();
         }
 
         // template <typename T>
@@ -134,6 +213,21 @@ namespace LessonTasks
             //return default; // так мы пишем без "ограничений типа" contstrain-ов
             //return func?.Invoke() ?? new T(); // если func не был передан или вернул null, то вернуть default - т.е. тоже null???
             return func?.Invoke() ?? default; // если func не был передан или вернул null, то вернуть default - т.е. тоже null???
+        }
+
+        internal class TrickyEqualityComparer : IEqualityComparer<int>
+        {
+            public TrickyEqualityComparer() { }
+
+            public bool Equals(int x, int y)
+            {
+                return false;
+            }
+
+            public int GetHashCode(int obj)
+            {
+                return 0;
+            }
         }
     }
 }
