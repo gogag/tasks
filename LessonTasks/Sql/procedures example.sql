@@ -16,7 +16,7 @@ AS BEGIN
   DECLARE @ResultSetIndex int = 0;
   WHILE @ResultSetIndex < @ProceduresCount BEGIN
     DECLARE @Name varchar(128) = JSON_VALUE(@SelectingProcedures, CONCAT('strict $[', @ResultSetIndex, '].Name'));
-    DECLARE @Options nvarchar(max) = JSON_QUERY(@SelectingProcedures, CONCAT('$lax [', @ResultSetIndex, '].Options')); -- lax можно не указывать, т.к. по умолчанию, т.е. не обязательно значение
+    DECLARE @Options nvarchar(max) = JSON_QUERY(@SelectingProcedures, CONCAT('lax $[', @ResultSetIndex, '].Options')); -- lax можно не указывать, т.к. по умолчанию, т.е. не обязательно значение
 
     IF @Options IS NULL BEGIN
       EXEC @Name @Records = @Records; 
@@ -34,6 +34,11 @@ CREATE TABLE GroupAnalytics (
 , PublishedHomeworksCount int NULL -- синхронизируется в результате процессе работы с домашними заданиями, в рамках другого агрегата. Механизмы обеспечения конечной согласованности для такой синхронизации сейчас не рассматриваем
 )
 GO -- 👆 расширим группы отдельной таблицей с регулярно обновляемой аналитикой, результаты которой нас не интересуют в большинстве транзакций над группами
+
+INSERT INTO GroupAnalytics
+SELECT TOP 1 Id, 5
+FROM Groups
+ORDER BY Id
 
 CREATE TABLE Groups_TeachersCount (
   GroupId int PRIMARY KEY FOREIGN KEY REFERENCES Groups(Id) ON DELETE CASCADE
@@ -122,7 +127,6 @@ BEGIN
       , '$.ExpName', 'Name')
       , '$.Direction', 'A')
       , N']'); -- TODO автовыбор сортировки исходя из используемых фильтров
-      SELECT @OrderBy
     --END ELSE IF BEGIN ...
     --  SET @OrderBy = '[...]';
     END ELSE
@@ -156,15 +160,6 @@ BEGIN
     , JSON_VALUE(value, 'strict $.ExpName')
     , JSON_VALUE(value, 'strict $.Direction')
   ) e(Num, Name, Direction);
-
-  SELECT @TotalOrderExpressions
-  , @DistinctOrderExpressions
-  , @IdOrderExpNum
-  , @IdOrderExpDirection
-  , @NameOrderExpNum
-  , @NameOrderExpDirection
-  , @TeachersCountOrderExpNum
-  , @TeachersCountOrderExpDirection
 
   IF @TotalOrderExpressions > 2 THROW 60000, '@TotalOrderExpressions > 3', 1;
   IF @TotalOrderExpressions != @DistinctOrderExpressions THROW 60000, '@TotalOrderExpressions != @DistinctOrderExpressions', 1;
