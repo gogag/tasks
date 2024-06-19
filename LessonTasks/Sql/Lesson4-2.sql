@@ -105,10 +105,13 @@ WHERE (
 )
 go -- тут мы видим во что "примерно" разворачивается сахар от FULL [OUTER] JOIN
 
+--alter table TableBad drop column Subject
 alter table TableBad
 add Subject as case
-	when GroupName in ('Lost group') then null -- это же не предмет явно
-	else GroupName
+	--when GroupName in ('Lost group') then null -- это же не предмет явно
+	--else GroupName
+	when GroupName in ('C#', 'SQL') then GroupName -- только предметы
+	else null
 end -- обратите внимание, что мы не пытаемся колонку материализовать, тем самым не приходится копировать тип и не нужно делать лишний update
 
 select * from TableBad
@@ -144,7 +147,7 @@ alter table TableBad drop column Subject
 go -- есть, убрали предметы, но все таки с нашей TableBad что-то не то, она все еще помойка связей! Надо с этим разобраться
 
 insert into TableBad (GroupName, TeacherId, SubjectId)
-values ('C#', 2, 2)
+values ('C#', 2, 2) -- теперь мы можем добавить еще одну группу с тем же предметом
 
 select * from Teachers
 select * from TableBad
@@ -206,14 +209,30 @@ from TableBad
 where SubjectId IS NOT NULL
 go -- тут надо прервать, чтобы объявить функцию
 
+---- Если ошибся в функции, использованной в Constraint-ах (будь то check или default)
+---- то вот такая вот боль:
+--alter table GroupSubjectSchedule
+--drop constraint CK__GroupSubjectSche__59FA5E80
+
+---- затем alter функции (а на реальной системе сначала создать вторую функций, второй check, а потом только удалять)
+
+--alter table GroupSubjectSchedule
+--add constraint CK_GroupSubjectSchedule_Teaches
+--check (dbo.FN_CheckTeaches(TeacherId, SubjectId) = 'true')
+--go -- это упрощенный пример боли от sql server . . .
+
 create function FN_CheckTeaches (@TeacherId int, @SubjectId int)
+--alter function FN_CheckTeaches (@TeacherId int, @SubjectId int) -- . . . так просто не прокатитывает
 returns bit as
 begin
   return case when EXISTS(
     select top 1 1
     from TeacherSubjects
-    where TeacherId = @TeacherId
-    AND SubjectId = @SubjectId
+    where @TeacherId is null -- чтобы не мешать снимать преподавателя с расписания
+	OR (
+		TeacherId = @TeacherId
+		AND SubjectId = @SubjectId
+	)
 ) then 1 else 0 end;
 end;
 go
@@ -225,6 +244,20 @@ add constraint PK_GroupSubjectSchedule primary key (GroupId, SubjectId) -- бу�
 , check (dbo.FN_CheckTeaches(TeacherId, SubjectId) = 'true') -- эта дичь очень далеко от правды.. Сейчас - просто ради демонстрации укуренных возможностей SQL Server прошлых лет. Во первых мы бы проверяли это в шарпе, во вторых реальная реализация может быть гораздо сложнее, смотря как редактируются преподаваемые предметы
 go -- все, разрулили. Теперь если в добавленное расписание группы пытаются поставить преподавателя - ограничение будет проверять, преподает ли он данный предмет
 
+select * from Groups
+select * from GroupSubjectSchedule
+select * from Subjects
+select * from TeacherSubjects
+select * from Teachers
+
+select * from TableBad
+
+--delete from TeacherSubjects -- наш волшебный check не способен это предотвратить
+--where TeacherId = 1 and SubjectId = 1
+
+--insert into TeacherSubjects
+--values (1, 1)
+
 drop table TableBad
 go -- грохнули наш изначальный мусор, ужасаемся количеству мучений, необходимых чтобы исправить подобного рода ошибку - и никогда ее не допускаем, нормализуем в уме, затем записываем в БД (стараемся и не перебарщиваем с атомарностью, когда это не требуется)
 
@@ -235,7 +268,7 @@ select t.*
 , CONCAT('[', subject.Ids, ']') as Teaches -- человек физически не может вести бесконечное число дисциплин. В агрегате мы бы проверяли, что максимальное число выбранных предметов не было превышено
 from Teachers t
 cross apply ( -- очень аккуратно, строго поиском по индексу
-	select STRING_AGG(ts.SubjectId, ',')
+	select STRING_AGG(ts.SubjectId, ',') -- пример аггрегирующей функции
 	from TeacherSubjects ts with (FORCESEEK)
 	where ts.TeacherId = t.Id
 ) subject(Ids)
@@ -270,3 +303,38 @@ delete from TeacherSubjects
 where TeacherId = (select t.Id from Teachers t where t.Name = N'Марь Иванна')
 and SubjectId = (select s.Id from Subjects s where s.Name = 'C#')
 go -- а вот этот не реагирует - ограчению откуда знать, что там в функции написано и на что реагировать. Это уже триггеры бы пригодились, но мы то знаем, что так удалять точно не будем, верно?
+
+select * from Groups
+select * from GroupSubjectSchedule
+select * from Subjects
+select * from TeacherSubjects
+select * from Teachers
+go -- что у нас есть в "сыром виде", оперативные таблицы (OLTP). Агрегации и групировки - все OLAP
+
+select distinct GroupId
+from GroupSubjectSchedule
+
+select GroupId
+from GroupSubjectSchedule
+group by GroupId
+go -- distinct эквивалентен такой группировке
+
+select GroupId
+, count(*) as Count
+, count(TeacherId) as AssignedCount
+, count(case when TeacherId is null then 1 end) as NotAssignedCount
+, count(*) over () as TotalCount -- бонус, общее число записей в таблице, будет у всех записей в результате одинковым
+, ROW_NUMBER() over (order by GroupId) as GroupNumber -- бонус порядковый номер группы
+--, ROW_NUMBER() over (partition by GroupId order by GroupId) as NumberWithinGroup -- бонус, будет выводить порядковый номер предмета в группе
+from GroupSubjectSchedule
+group by GroupId
+having count(*) > 1
+
+select *
+, ROW_NUMBER() over (partition by GroupId order by GroupId) as NumberWithinGroup -- бонус, будет выводить порядковый номер предмета в группе, если бы мы группировали по GroupId
+from GroupSubjectSchedule
+
+update GroupSubjectSchedule
+set TeacherId = 1 -- count(TeacherId) покажет столько же сколько count(*)
+--set TeacherId = null -- count(TeacherId) покажет только с заданным TeacherId
+where GroupId = 1 and SubjectId = 1
