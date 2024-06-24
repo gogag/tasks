@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{16D1CDC6-0CA4-49E0-89C0-20455FE2343A}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>LessonTasks</RootNamespace>
-    <AssemblyName>LessonTasks</AssemblyName>
+    <ProjectGuid>{3C75E2FE-4FA3-4EF2-8B14-9814B03CE265}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LessonTasks.Analysing</RootNamespace>
+    <AssemblyName>LessonTasks.Analysing</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -43,18 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="BadWordAnalyzer.cs" />
+    <Compile Include="IProblemAnalyzer.cs" />
+    <Compile Include="ProblemCollector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Trash.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LessonTasks.Analysing\LessonTasks.Analysing.csproj">
-      <Project>{3c75e2fe-4fa3-4ef2-8b14-9814b03ce265}</Project>
-      <Name>LessonTasks.Analysing</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
